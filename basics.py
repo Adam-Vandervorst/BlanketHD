@@ -3,16 +3,16 @@ import torchhd
 import matplotlib.pyplot as plt
 
 
-d = 8192
-# d = 10_000_000
+D = 8192
+# D = 10_000_000
 
 
 def flip_frac(original, frac_change):
-    return torchhd.randsel(original, torchhd.random(1, d)[0], p=(1 - frac_change))
+    return torchhd.randsel(original, torchhd.random(1, D)[0], p=(1 - frac_change))
 
 
 def bit_error_rate(input, others):
-    return torchhd.hamming_similarity(input, others)/d
+    return torchhd.hamming_similarity(input, others)/D
 
 
 def flip_frac_to_bit_error_rate(frac_change):
@@ -41,7 +41,7 @@ adj = [
 [0, 0, 0, 0, 0, 0, 1, 1, 0],  # γ
 ]
 
-root1, root2 = torchhd.random(2, d)
+root1, root2 = torchhd.random(2, D)
 # distance one-step nodes
 p = 0.2
 # approx. distance of intermediate-step nodes
