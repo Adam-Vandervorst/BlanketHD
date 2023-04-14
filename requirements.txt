@@ -1,2 +1,2 @@
-torch-hd~=5.0.1
+bhv==0.2.2
 matplotlib~=3.7.1
