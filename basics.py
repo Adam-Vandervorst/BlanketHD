@@ -26,10 +26,9 @@ adj = [
 
 root1, root2 = BHV.nrand(2)
 # distance one-step nodes
-p = 0.2
+p = 0.1
 # approx. distance of intermediate-step nodes
-ph = p/2
-print(p, ph, ps, pss)
+ph = 0.05
 
 a = root1
 b = root1.flip_frac(p)
@@ -44,7 +43,7 @@ c3 = c.flip_frac(p)
 
 ns = [a, b, c, c1, c2, c3, α, β, γ]
 
-sim = [[.5 if x == y else 1 - x.bit_error_rate(y) for x in ns] for y in ns]
+sim = [[0 if x == y else x.std_apart(y, invert=True) for x in ns] for y in ns]
 
 print(a.bit_error_rate(b),
       root2.bit_error_rate(α),
@@ -53,6 +52,12 @@ print(a.bit_error_rate(b),
       b.bit_error_rate(β),
       α.bit_error_rate(β))
 
-plt.matshow(sim)
-plt.matshow(adj)
+ls = ["", "a", "b", "c", "c1", "c2", "c3", "α", "β", "γ"]
+fig, (ax_adj, ax_sim) = plt.subplots(1, 2)
+ax_adj.set_xticklabels(ls)
+ax_adj.set_yticklabels(ls)
+ax_adj.matshow(adj)
+ax_sim.set_xticklabels(ls)
+ax_sim.set_yticklabels(ls)
+ax_sim.matshow(sim)
 plt.show()
