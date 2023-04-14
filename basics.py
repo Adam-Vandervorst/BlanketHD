@@ -2,9 +2,6 @@ from bhv.np import NumPyBoolBHV as BHV
 import matplotlib.pyplot as plt
 
 
-def bit_error_rate_to_flip_frac(ber):
-    return ber*2 - 1
-
 # a - b   α - β
 # |        \ /
 # c- c3     γ
