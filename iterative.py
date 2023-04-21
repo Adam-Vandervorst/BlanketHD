@@ -1,3 +1,4 @@
+from random import randrange
 from bhv.np import NumPyBoolBHV as BHV
 from shared import compare_adjs
 
@@ -20,34 +21,40 @@ adj = [
     [0, 0, 0, 0, 0, 0, 1, 0, 1],  # β
     [0, 0, 0, 0, 0, 0, 1, 1, 0],  # γ
 ]
+N = len(adj)
 
-root1, root2 = BHV.nrand(2)
-# distance one-step nodes
 p = 0.1
-# approx. distance of intermediate-step nodes
-ph = 0.05
 
-a = root1
-b = root1.flip_frac(p)
-c = root1.flip_frac(p)
-c1 = c.flip_frac(p)
-c2 = c.flip_frac(p)
-c3 = c.flip_frac(p)
-α = root2.flip_frac(ph)
-β = root2.flip_frac(ph)
-γ = root2.flip_frac(ph)
+ns = BHV.nrand(N)
+
+for epoch in range(1000):
+    i = randrange(0, N)
+    j = randrange(0, N)
+
+    if adj[i][j]:
+        ni = ns[i]
+        nj = ns[j]
+
+        if ni.bit_error_rate(nj) > .5 - p:
+            c = ni.select_rand(nj)
+
+            ni_ = c.select_rand2(ni, 6)
+            nj_ = c.select_rand2(nj, 6)
+
+            ns[i] = ni_
+            ns[j] = nj_
 
 
-ns = [a, b, c, c1, c2, c3, α, β, γ]
+a, b, c, c1, c2, c3, α, β, γ = ns
 
 sim = [[0 if x == y else x.std_apart(y, invert=True) for x in ns] for y in ns]
 
 print(a.bit_error_rate(b),
-      # root2.bit_error_rate(α),
       a.bit_error_rate(c1),
       b.bit_error_rate(c1),
       b.bit_error_rate(β),
       α.bit_error_rate(β))
+
 
 ls = ["a", "b", "c", "c1", "c2", "c3", "α", "β", "γ"]
 
