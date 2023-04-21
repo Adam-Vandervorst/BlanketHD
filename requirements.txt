@@ -1,2 +1,2 @@
-bhv==0.2.2
+bhv==0.2.3
 matplotlib~=3.7.1
