@@ -6,7 +6,6 @@ from bhv.np import NumPyBoolBHV as BHV
 # c1  c2
 
 
-
 u1, u2 = BHV.nrand(2)
 p = 1/4
 R = BHV.random(p)
@@ -16,10 +15,8 @@ print(u1.active_fraction(), u2.active_fraction())
 print(lr(u1, u2), lr(u2, u1))
 print(u1.bit_error_rate(u2))
 
-# u1_ = R.select(u1.flip_frac_on((1-p)/2), u1.flip_frac_off(p/2))
-# u2_ = R.select(u2.flip_frac_off((1-p)/2), u2.flip_frac_on(p/2))
-u1_ = R.select(u1.mix(BHV.ONE, p), BHV.ZERO.mix(u1, p))
-u2_ = R.select(u2.mix(BHV.ZERO, p), BHV.ONE.mix(u2, p))
+u1_ = R.select(u1.flip_frac_on((1-p)/2), u1.flip_frac_off(p/2))
+u2_ = R.select(u2.flip_frac_off((1-p)/2), u2.flip_frac_on(p/2))
 print()
 
 print(u1_.active_fraction(), u2_.active_fraction())
