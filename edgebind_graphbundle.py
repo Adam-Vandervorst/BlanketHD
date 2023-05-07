@@ -20,7 +20,7 @@ hvs, Ghv = convert(G)
 
 for n in G.nodes:
     print(n)
-    hv = hvs[n]
     print(sorted(G.adj[n].keys()))
+    hv = hvs[n]
     nbs = Ghv ^ hv
-    print(sorted([n for n in G.nodes if not hvs[n].unrelated(nbs)]))
+    print(sorted([n_ for n_ in G.nodes if not hvs[n_].unrelated(nbs)]))
