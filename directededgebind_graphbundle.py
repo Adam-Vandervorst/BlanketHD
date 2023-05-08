@@ -4,7 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def convert(g: nx.Graph):
+def convert(g: nx.DiGraph):
     hvs = {n: BHV.rand() for n in g.nodes}
     binds = []
 
