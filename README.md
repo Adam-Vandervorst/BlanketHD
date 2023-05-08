@@ -2,6 +2,7 @@
 |-------------------------------------------|----------|------------|-------------|-------------|
 | edge-bind graph-bundle                    | x        | x          | x           | v           |
 | directed-edge-bind graph-bundle           | v        | v          | x           | x           |
+| self mixed outgoing-majority              | v        | x          | x           | v           |
 | setd(root, m-clique, m)                   | x        | x          | x           | x           |
 | iterative distance refinement             | x        | x          | x           | x           |
 | iterative directed distance refinement    | v        | x          | x           | x           |
@@ -21,6 +22,12 @@ handle: `bind(src, tgt) bundle`
 [file](directededgebind_graphbundle.py)
 
 handle: `bind(src, l, perm(tgt)) bundle`
+
+### self mixed outgoing-majority
+
+[file](self_mixed_outgoingmajority.py)
+
+handle: `randsel(src, majority(tgts))`
 
 ### iterative distance refinement
 
