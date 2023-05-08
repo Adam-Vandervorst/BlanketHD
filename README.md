@@ -23,11 +23,11 @@ handle: `bind(src, tgt) bundle`
 
 handle: `bind(src, l, perm(tgt)) bundle`
 
-### self mixed outgoing-majority
+### self mixed outgoing-bundle
 
-[file](self_mixed_outgoingmajority.py)
+[file](self_mixed_outgoingbundle.py)
 
-handle: `randsel(src, majority(tgts))`
+handle: `randsel(src, bundle(tgts))`
 
 ### iterative distance refinement
 
