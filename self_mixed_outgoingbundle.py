@@ -9,7 +9,7 @@ R = BHV.rand()
 def lr(l, r): return l.bias_rel(r, R ^ l)
 
 
-def convert(g: nx.DiGraph, initial = None):
+def convert(g: nx.DiGraph, initial=None):
     if initial is None:
         initial = {n: BHV.rand() for n in g.nodes}
 

@@ -1,3 +1,3 @@
-bhv==0.2.5
+bhv==0.2.9
 matplotlib~=3.7.1
 networkx
