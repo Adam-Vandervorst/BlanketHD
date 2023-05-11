@@ -13,13 +13,19 @@ Which buildings blocks are fast should be listed and optimized for, possibly by 
 
 - node classification
 
-Given labels
-
+Given labels on part of the nodes, classify the rest based on their connections.
 
 - link prediction
+
+Given a part of the edges, predict which edges would be likely to be part of the full graph.
+
 - distance estimation
 
+Given two nodes, estimate the length of the shortest path between them.
 
+
+---
+Original tasks:
 Classification
 Query
 Pattern matching
