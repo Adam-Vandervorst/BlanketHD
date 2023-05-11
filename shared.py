@@ -19,7 +19,7 @@ def compare_adjs(adj, sim, labels):
     plt.show()
 
 
-def calc_undirected_nbs(g, nbsf):
+def calc_nbs(g, nbsf):
     counts = []
     overs = []
     unders = []
@@ -36,7 +36,7 @@ def calc_undirected_nbs(g, nbsf):
     return counts, overs, unders
 
 
-def score_undirected_nbs(g, nbsf):
-    cs, os, us = calc_undirected_nbs(g, nbsf)
+def score_nbs(g, nbsf):
+    cs, os, us = calc_nbs(g, nbsf)
     print("mean edges", fmean(cs), "std edges", pstdev(cs))
     print("mean edge overshoot", fmean(os), "mean edge undershoot", fmean(us))

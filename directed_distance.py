@@ -4,7 +4,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from random import random, choice
 
-from shared import score_undirected_nbs
+from shared import score_nbs
 
 
 R = BHV.rand()
@@ -40,4 +40,4 @@ for (x, y) in G_.edges:
 P = .03
 hvs = convert(G, p=P)
 
-score_undirected_nbs(G, lambda n: [n_ for n_ in G.nodes if lr(hvs[n], hvs[n_]) < (.5 - P)])
+score_nbs(G, lambda n: [n_ for n_ in G.nodes if lr(hvs[n], hvs[n_]) < (.5 - P)])

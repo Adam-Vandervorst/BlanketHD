@@ -1,12 +1,10 @@
-from bhv.np import NumPyPacked64BHV as BHV
+from random import random
 
 import networkx as nx
 import matplotlib.pyplot as plt
-from random import random
+from bhv.np import NumPyPacked64BHV as BHV
 
-
-R = BHV.rand()
-def lr(l, r): return l.bias_rel(r, R ^ l)
+from shared import score_nbs
 
 
 def convert(g: nx.DiGraph, initial=None):
@@ -18,12 +16,8 @@ def convert(g: nx.DiGraph, initial=None):
             ])) for x in g.nodes}
 
 
-G = nx.erdos_renyi_graph(100, 0.05, directed=True)
+G = nx.erdos_renyi_graph(50, 0.05, directed=True)
 
 hvs = convert(G)
 
-for n in G.nodes:
-    print(n)
-    print(sorted(G.adj[n].keys()))
-    hv = hvs[n]
-    print(sorted([n_ for n_ in G.nodes if n != n_ and not hv.unrelated(hvs[n_], 8)]))
+score_nbs(G, lambda n: (n_ for n_ in G.nodes if n != n_ and not hvs[n].unrelated(hvs[n_], 8)))

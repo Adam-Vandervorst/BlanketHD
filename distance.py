@@ -4,6 +4,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from random import choices
 
+from shared import score_nbs
+
 
 def convert(g: nx.Graph, p=0.05, k=100, s_power=6):
     hvs = {n: BHV.rand() for n in g.nodes}
@@ -28,8 +30,5 @@ G = nx.karate_club_graph()
 P = 0.05
 hvs = convert(G, p=P)
 
-for n in G.nodes:
-    print(n)
-    print(sorted(G.adj[n].keys()))
-    hv = hvs[n]
-    print(sorted([n_ for n_ in G.nodes if n != n_ and hvs[n_].bit_error_rate(hv) < .5 - P]))
+
+score_nbs(G, lambda n: [n_ for n_ in G.nodes if n != n_ and hvs[n_].bit_error_rate(hvs[n]) < .5 - P])

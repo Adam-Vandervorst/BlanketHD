@@ -3,6 +3,8 @@ from bhv.np import NumPyPacked64BHV as BHV
 import networkx as nx
 import matplotlib.pyplot as plt
 
+from shared import score_nbs
+
 
 def convert(g: nx.DiGraph):
     hvs = {n: BHV.rand() for n in g.nodes}
@@ -14,13 +16,15 @@ def convert(g: nx.DiGraph):
     return hvs, BHV.majority(binds)
 
 
-G = nx.erdos_renyi_graph(100, 0.05, directed=True)
+G = nx.erdos_renyi_graph(50, 0.05, directed=True)
 
 hvs, Ghv = convert(G)
 
-for n in G.nodes:
-    print(n)
-    print(sorted(G.adj[n].keys()))
+
+def nbs(n):
     hv = hvs[n]
     nbs = (Ghv ^ hv).permute(-1)
-    print(sorted([n_ for n_ in G.nodes if not hvs[n_].unrelated(nbs, 3)]))
+    return [n_ for n_ in G.nodes if not hvs[n_].unrelated(nbs, 3)]
+
+
+score_nbs(G, nbs)

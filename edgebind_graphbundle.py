@@ -3,6 +3,8 @@ from bhv.np import NumPyPacked64BHV as BHV
 import networkx as nx
 import matplotlib.pyplot as plt
 
+from shared import score_nbs
+
 
 def convert(g: nx.Graph):
     hvs = {n: BHV.rand() for n in g.nodes}
@@ -18,9 +20,11 @@ G = nx.karate_club_graph()
 
 hvs, Ghv = convert(G)
 
-for n in G.nodes:
-    print(n)
-    print(sorted(G.adj[n].keys()))
+
+def nbs(n):
     hv = hvs[n]
     nbs = Ghv ^ hv
-    print(sorted([n_ for n_ in G.nodes if not hvs[n_].unrelated(nbs)]))
+    return [n_ for n_ in G.nodes if not hvs[n_].unrelated(nbs)]
+
+
+score_nbs(G, nbs)
