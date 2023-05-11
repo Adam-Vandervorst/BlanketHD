@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from statistics import fmean, pstdev
 
 
 def compare_adjs(adj, sim, labels):
@@ -16,3 +17,26 @@ def compare_adjs(adj, sim, labels):
     ax_sim.set_yticklabels(labels)
     ax_sim.matshow(sim)
     plt.show()
+
+
+def calc_undirected_nbs(g, nbsf):
+    counts = []
+    overs = []
+    unders = []
+
+    for n in g.nodes:
+        truth = set(g.adj[n].keys())
+        predicted = set(nbsf(n))
+        count = len(truth)
+        over = len(predicted - truth)
+        under = len(truth - predicted)
+        counts.append(count)
+        overs.append(over)
+        unders.append(under)
+    return counts, overs, unders
+
+
+def score_undirected_nbs(g, nbsf):
+    cs, os, us = calc_undirected_nbs(g, nbsf)
+    print("mean edges", fmean(cs), "std edges", pstdev(cs))
+    print("mean edge overshoot", fmean(os), "mean edge undershoot", fmean(us))

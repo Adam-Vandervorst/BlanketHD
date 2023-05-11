@@ -2,45 +2,42 @@ from bhv.np import NumPyPacked64BHV as BHV
 
 import networkx as nx
 import matplotlib.pyplot as plt
-from random import random
+from random import random, choice
+
+from shared import score_undirected_nbs
 
 
 R = BHV.rand()
 def lr(l, r): return l.bias_rel(r, R ^ l)
 
 
-def convert(g: nx.DiGraph, p=0.05, k=2000, s_power=6):
+def convert(g: nx.DiGraph, p=0.05, k=1000, s_power=5, r_power=8):
     hvs = {n: BHV.rand() for n in g.nodes}
-    edges = set(g.edges)
+    edges = list(g.edges)
 
-    for i in range(k):
-        # TODO clean up
-        for x in g.nodes:
-            for y in g.nodes:
-                hvx = hvs[x]
-                hvy = hvs[y]
+    for i in range(k*len(edges)):
+        (x, y) = choice(edges)
+        hvx = hvs[x]
+        hvy = hvs[y]
 
-                if (x, y) in edges:
-                    d = .49
-                    print(x, y, lr(hvx, hvy))
-                    if lr(hvx, hvy) < .5 + p:
-                        hvx_ = (R ^ hvx).select(hvx | hvx.flip_frac_off(d), hvx & hvx.flip_frac_on(d))
-                        hvy_ = (R ^ hvx).select(hvy & hvx.flip_frac_on(d), hvy | hvx.flip_frac_off(d))
-                        print(lr(hvx_, hvy_))
-                        hvs[x] = hvx_
-                        hvs[y] = hvy_
-                elif i < 1500:
-                    hvs[x] = hvx.randomize_pow(9)
-                    hvs[y] = hvy.randomize_pow(9)
+        lrxy = lr(hvx, hvy)
+        # print(lrxy)
+        to_flip = lrxy - (.5 - p)
+
+        if to_flip > 0:
+            e = 0.0001
+            hvy_ = (R ^ hvx).select(hvy | hvy.flip_frac(to_flip + e), hvy & hvy.flip_frac(to_flip + e))
+            # print(lr(hvx, hvy_), hvx.active_fraction(), hvy_.active_fraction())
+            hvs[y] = hvy_
     return hvs
 
 
-G = nx.erdos_renyi_graph(50, 0.05, directed=True)
+G_ = nx.erdos_renyi_graph(100, 0.1)
+G = nx.DiGraph()
+for (x, y) in G_.edges:
+    G.add_edge(x, y)
 
-hvs = convert(G)
+P = .03
+hvs = convert(G, p=P)
 
-for n in G.nodes:
-    print(n)
-    print(sorted(G.adj[n].keys()))
-    hv = hvs[n]
-    print(sorted([n_ for n_ in G.nodes if lr(hv, hvs[n_]) > .55]))
+score_undirected_nbs(G, lambda n: [n_ for n_ in G.nodes if lr(hvs[n], hvs[n_]) < (.5 - P)])
