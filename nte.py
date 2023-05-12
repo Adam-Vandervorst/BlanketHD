@@ -1,52 +1,40 @@
 from bhv.np import NumPyBoolBHV as BHV
 
-
-#   R  S
-#   |/
-# A----B
-
-A, B, R, S = BHV.nrand(4)
-pow = 1
-def test(s, p, o): return s.bias_rel(o, p)
-
-print(A.active_fraction(), B.active_fraction())
-print(test(A, B, R), test(B, A, R))
-print(A.bit_error_rate(B))
+from hedit_utils import HDict, squash
 
 
-def bias_ps(s, ps, o):
+NTE = HDict.load_from_path("graphs/InteractiveDisneyStrategy.json", "property_graph")
+
+
+def bias_ps(s, ps, o, pw=1):
     mps = BHV.majority(ps)
-    s_ = mps.select(s.flip_pow_on(pow), s.flip_pow_off(pow))
-    o_ = mps.select(o.flip_pow_off(pow), o.flip_pow_on(pow))
+    s_ = mps.select(s.flip_pow_on(pw), s.flip_pow_off(pw))
+    o_ = mps.select(o.flip_pow_off(pw), o.flip_pow_on(pw))
     return s_, o_
 
-def bias_p(s, p, o):
-    s_ = p.select(s.flip_pow_on(pow), s.flip_pow_off(pow))
-    o_ = p.select(o.flip_pow_off(pow), o.flip_pow_on(pow))
-    return s_, o_
 
-def _bias_ps_via_bias_p(s, ps, o):
-    ss, os = zip(*[bias_p(s, p, o) for p in ps])
-    return BHV.majority(ss), BHV.majority(os)
+def convert(nte: HDict, pw=1):
+    hvs = {n['id']: BHV.rand() for n in nte.find_nodes()}
+
+    for s, ps, o in squash(nte.triples(), axis=1):
+        hvs[s], hvs[o] = bias_ps(hvs[s], [hvs[p] for p in ps], hvs[o], pw)
+
+    return hvs
 
 
-A_, B_ = bias_ps(A, [R, S], B)
+hvs = convert(NTE, pw=1)
 
+print("predicting properties")
+for s, ps, o in squash(NTE.triples(), axis=1):
+    print(s, o)
+    print(ps)
+    print([p for p in hvs if p != s and hvs[s].bias_rel(hvs[o], hvs[p]) > .55])
 print()
-
-print(A_.active_fraction(), B_.active_fraction())
-print(test(A_, R, B_), test(B_, R, A_))
-print(test(A_, S, B_), test(B_, S, A_))
-print(A_.bit_error_rate(B_))
-
-
-"""
-0.4918212890625 0.501708984375
-0.4943932220284077 0.5026602482898404
-0.5091552734375
-
-0.4915771484375 0.503173828125
-0.5496754867698452 0.45032451323015477
-0.5556633519282076 0.4443366480717924
-0.5179443359375
-"""
+print("predicting neighbors")
+for s in NTE['data']:
+    s = s['id']
+    pos = list(squash(NTE.triples(s=s), axis=1))
+    if pos:
+        print(s)
+        print(*pos, sep='\t')
+        print(*[(p, [o for o in os if hvs[s].bias_rel(hvs[o], hvs[p]) > .50]) for (p, os) in pos], sep='\t')
