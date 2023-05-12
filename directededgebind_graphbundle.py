@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from shared import score_nbs
 
 
-def convert(g: nx.DiGraph):
-    hvs = {n: BHV.rand() for n in g.nodes}
+def convert(g: nx.DiGraph, initial=None):
+    hvs = initial or {n: BHV.rand() for n in g.nodes}
     binds = []
 
     for x, y in g.edges:

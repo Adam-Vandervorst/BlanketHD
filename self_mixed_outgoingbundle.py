@@ -8,11 +8,10 @@ from shared import score_nbs
 
 
 def convert(g: nx.DiGraph, initial=None):
-    if initial is None:
-        initial = {n: BHV.rand() for n in g.nodes}
+    hvs = initial or {n: BHV.rand() for n in g.nodes}
 
-    return {x: initial[x].select_rand(BHV.majority([
-                initial[y] for y in g.adj[x].keys()
+    return {x: hvs[x].select_rand(BHV.majority([
+                hvs[y] for y in g.adj[x].keys()
             ])) for x in g.nodes}
 
 

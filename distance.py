@@ -7,8 +7,8 @@ from random import choices
 from shared import score_nbs
 
 
-def convert(g: nx.Graph, p=0.05, k=100, s_power=6):
-    hvs = {n: BHV.rand() for n in g.nodes}
+def convert(g: nx.Graph, initial=None, p=0.05, k=100, s_power=6):
+    hvs = initial or {n: BHV.rand() for n in g.nodes}
 
     for i in range(k):
         for x, y in g.edges:

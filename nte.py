@@ -3,6 +3,7 @@ from bhv.np import NumPyBoolBHV as BHV
 from hedit_utils import HDict, squash
 
 
+# view graph at https://apps.adamv.be/HEdit/?uri=examples/InteractiveDisneyStrategy.json&hide_gray&selected=%5B0%5D&hide_help
 NTE = HDict.load_from_path("graphs/InteractiveDisneyStrategy.json", "property_graph")
 
 
@@ -13,8 +14,8 @@ def bias_ps(s, ps, o, pw=1):
     return s_, o_
 
 
-def convert(nte: HDict, pw=1):
-    hvs = {n['id']: BHV.rand() for n in nte.find_nodes()}
+def convert(nte: HDict, initial=None, pw=1):
+    hvs = initial or {n['id']: BHV.rand() for n in nte.find_nodes()}
 
     for s, ps, o in squash(nte.triples(), axis=1):
         hvs[s], hvs[o] = bias_ps(hvs[s], [hvs[p] for p in ps], hvs[o], pw)

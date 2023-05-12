@@ -11,8 +11,8 @@ R = BHV.rand()
 def lr(l, r): return l.bias_rel(r, R ^ l)
 
 
-def convert(g: nx.DiGraph, p=0.05, k=1000, s_power=5, r_power=8):
-    hvs = {n: BHV.rand() for n in g.nodes}
+def convert(g: nx.DiGraph, initial=None, p=0.05, k=1000, s_power=5, r_power=8):
+    hvs = initial or {n: BHV.rand() for n in g.nodes}
     edges = list(g.edges)
 
     for i in range(k*len(edges)):
