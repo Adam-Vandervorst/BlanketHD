@@ -1,6 +1,7 @@
 | implementation                         | directed | self loops | edge labels | node labels |
 |----------------------------------------|----------|------------|-------------|-------------|
 | edge-bind graph-bundle                 | x        | x          | x           | v           |
+| edge-bind blanket-bundle               | x        | x          | x           | v           |
 | directed-edge-bind graph-bundle        | v        | v          | x           | x           |
 | self mixed outgoing-majority           | v        | x          | x           | v           |
 | setd(root, m-clique, m)                | x        | x          | x           | x           |
@@ -16,6 +17,12 @@
 [file](edgebind_graphbundle.py)
 
 handle: `bind(src, tgt) bundle`
+
+### edge-bind blanket-bundle
+
+[file](benchmarks/edgebind_blanketbundle.py)
+
+handle: `bind(src in blanket, tgt in blanket) bundle`
 
 ### directed-edge-bind graph-bundle
 
