@@ -25,11 +25,14 @@ def calc_nbs(g, nbsf):
     unders = []
 
     for n in g.nodes:
-        truth = set(g.adj[n].keys())
+        truth = set(g.neighbors(n))
+
         predicted = set(nbsf(n))
+
         count = len(truth)
         over = len(predicted - truth)
         under = len(truth - predicted)
+
         counts.append(count)
         overs.append(over)
         unders.append(under)

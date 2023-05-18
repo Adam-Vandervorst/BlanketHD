@@ -80,9 +80,15 @@ print("undershoot loss:", fmean(avg_undershoot), "+-", pstdev(avg_undershoot))
 
 
 """
-Workstation, 5 repetitions
+Adam Workstation
 conversion time: 64.92264482758473 +- 1.3443107052971761
 scoring time: 4.556829810584896 +- 0.05932598371485799
 overshoot loss: 0.17745430970212372 +- 0.04014832701293576
 undershoot loss: 0.360622835307186 +- 0.026702056348248782
+
+AWS c6i.large
+conversion time: 57.702627090600004 +- 0.5105765311043634
+scoring time: 8.311138239999991 +- 0.06991942551272408
+overshoot loss: 0.16692675233013826 +- 0.03326871875573161
+undershoot loss: 0.36863357440624983 +- 0.030591340731719513
 """

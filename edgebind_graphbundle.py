@@ -13,6 +13,19 @@ def convert(g: nx.Graph, initial=None):
     for x, y in g.edges:
         binds.append(hvs[x] ^ hvs[y])
 
+    #  x - y - q
+    #  |
+    #  z
+    #
+    #  Ghv = {x ^ y, x ^ z, y ^ q}
+    #
+    #  nbs(x)
+    #  x ^ Ghv
+    #  x ^ {x ^ y, x ^ z, y ^ q}
+    #  {x ^ x ^ y, x ^ x ^ z, y ^ q}
+    #  {y, z, y ^ q}
+    #  {y, z}
+
     return hvs, BHV.majority(binds)
 
 

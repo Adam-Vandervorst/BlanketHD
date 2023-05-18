@@ -9,6 +9,8 @@ from bhv.np import NumPyPacked64BHV as BHV
 # from bhv.np import NumPyBoolBHV as BHV
 
 
+#  nbsf has type nx.Node -> [nx.Node]
+#  and the oracle satisfying this is g.neighbors
 def score_undirected_nbs(g: nx.Graph, nbsf, check_frac=.1):
     counts = []
     overs = []
@@ -30,13 +32,19 @@ def score_undirected_nbs(g: nx.Graph, nbsf, check_frac=.1):
     return counts, overs, unders
 
 
-def convert(g: nx.Graph, initial=None, ms=10, red=2):
+def convert(g: nx.Graph, initial=None, nblankets=10, redundancy=2):
     hvs = initial or {n: BHV.rand() for n in g.nodes}
 
     with Pool() as p:
         binds = p.starmap(BHV.__xor__, [(hvs[x], hvs[y]) for x, y in g.edges])
-        blankets = p.map(BHV.majority, [sample(binds, int(red*len(binds)/ms)) for _ in range(ms)])
+        blankets = p.map(BHV.majority, [sample(binds, int(redundancy*len(binds)/nblankets)) for _ in range(nblankets)])
     return hvs, blankets
+
+
+N = 1000
+Ef = 0.03
+RED = 2
+B = N//(30//RED)  # 30 is the capacity of a majority bundle used
 
 
 conversion_times = []
@@ -46,11 +54,9 @@ avg_undershoot = []
 
 for i in range(5):
     print("repetition", i)
-    G = nx.erdos_renyi_graph(1000, 0.03)
+    G = nx.erdos_renyi_graph(N, Ef)
     t0 = monotonic()
-    RED = 2
-    B = 1000//(30//RED)
-    hvs, blankets = convert(G, ms=B, red=RED)
+    hvs, blankets = convert(G, nblankets=B, redundancy=RED)
     ct = monotonic() - t0
     print("conversion time:", ct)
     conversion_times.append(ct)
@@ -83,10 +89,8 @@ print("undershoot loss:", fmean(avg_undershoot), "+-", pstdev(avg_undershoot))
 
 
 """
-Workstation 8 cores
-5 repetitions
+Adam Workstation 8 cores
 
-100 nodes
 1000 nodes
 1 "blanket" (NOTE this is doing a very large bundle, use NumPyBoolBHV)
 conversion time: 0.41756714361254127 +- 0.0639423438148542
@@ -100,9 +104,28 @@ scoring time: 0.7203056167811155 +- 0.028054543306225213
 overshoot loss: 0.8763651593649275 +- 0.020374035578414305
 undershoot loss: 0.8555179588353592 +- 0.006161792551931035
 
-1000/15 redundancy 2 blankets (checking 1 in 10)
+1000//(30//2) blankets (checking 1 in 10)
 conversion time: 2.72682489764411 +- 0.04742734934242383
 scoring time: 4.615515147196129 +- 0.17808535994692343
 overshoot loss: 0.4832444826882484 +- 0.014321876298373441
 undershoot loss: 0.5522187451599556 +- 0.012364810368286287
+
+AWS c6i.large 2 cores
+1000//(30//2) blankets (checking 1 in 10)
+conversion time: 12.228359039600026 +- 0.12517443612193752
+scoring time: 50.87219557479998 +- 0.1338535056834851
+overshoot loss: 0.4684689726364574 +- 0.015055239250897216
+undershoot loss: 0.5702441709158104 +- 0.008900834538223358
+
+AWS c6i.x16large 64 cores
+1000//(30//2) blankets (checking 1 in 10)
+conversion time: 0.9360306159999994 +- 0.012868246615325736
+scoring time: 2.0433540976000133 +- 0.015534015157973488
+overshoot loss: 0.46209885034199116 +- 0.007352991359913596
+undershoot loss: 0.5704420880132461 +- 0.00906461941805357
+
+
+AWS c6in.metal 128 cores
+1000//(30//2) blankets (checking 1 in 10)
+TODO
 """

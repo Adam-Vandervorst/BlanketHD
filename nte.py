@@ -23,6 +23,22 @@ def convert(nte: HDict, initial=None, pw=1):
     return hvs
 
 
+"""
+# Conceptually, you could use pre-calculated vectors like this:
+L = BHV.rand()
+H = BHV.rand()
+def encode(x):
+    return L.select_random(H, x)
+
+
+nodes_and_properties = nte.find_nodes()
+nodes = {n['id']: BHV.rand() for n in nodes_and_properties if n['node']}
+weights = {n['id']: encode(n['weight']) for n in nodes_and_properties if not n['node']}
+
+precalculated = nodes | weights
+
+hvs = convert(NTE, initial=precalculated, pw=1)
+"""
 hvs = convert(NTE, pw=1)
 
 print("predicting properties")
