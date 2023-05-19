@@ -50,6 +50,14 @@ handle: `setdd(src, tgt, adj(src, tgt), D)`
 
 ### NTE
 
-[file](nte.py)
+[file](bias_ps_nte.py)
 
 handle: `setdrel(src, tgt, maj(ls))`
+
+[file](self_mixed_propertybundle.py)
+
+handle: `randsel(s, bundle(bind(p, o)))`
+
+[file](triplebind_propertybundle.py)
+
+handle: `p, bundle(bind(Ps, Qo))`
