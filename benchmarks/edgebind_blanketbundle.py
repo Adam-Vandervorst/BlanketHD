@@ -89,6 +89,8 @@ print("undershoot loss:", fmean(avg_undershoot), "+-", pstdev(avg_undershoot))
 
 
 """
+OUTDATED (was bhv version 0.3.0)
+
 Adam Workstation 8 cores
 
 1000 nodes

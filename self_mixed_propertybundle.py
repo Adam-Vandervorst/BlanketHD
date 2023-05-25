@@ -9,7 +9,7 @@ from hedit_utils import HDict, squash
 NTE = HDict.load_from_path("graphs/InteractiveDisneyStrategy.json", "property_graph")
 
 
-def convert(nte: HDict, initial=None, iterations=16, pw=1):
+def convert(nte: HDict, initial=None, iterations=1, pw=1):
     """
     Supports (s, ?, o) and (s, p, ?) queries
     Update rule: v_{n+1} = v_n + \sigma(\pi(w, e) | e \in I(v, w), w \in N(v))\cdot\epsilon
@@ -25,7 +25,7 @@ def convert(nte: HDict, initial=None, iterations=16, pw=1):
     return hvs
 
 
-hvs = convert(NTE, pw=3)
+hvs = convert(NTE, pw=1)
 
 print("predicting properties (s, ?, o)")
 for s, ps, o in squash(NTE.triples(), axis=1):
