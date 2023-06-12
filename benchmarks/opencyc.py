@@ -3,10 +3,10 @@
 from time import monotonic
 from statistics import fmean, pstdev
 
-from bhv.np import NumPyPacked64BHV as BHV
+# from bhv.np import NumPyPacked64BHV as BHV
+from bhv.native import NativePackedBHV as BHV
 from tqdm import tqdm
 from rdflib import Graph
-from multiprocessing import Pool
 
 g = Graph()
 

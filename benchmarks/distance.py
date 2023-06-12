@@ -2,7 +2,8 @@ from time import monotonic
 from statistics import fmean, pstdev
 
 import networkx as nx
-from bhv.np import NumPyPacked64BHV as BHV
+# from bhv.np import NumPyPacked64BHV as BHV
+from bhv.native import NativePackedBHV as BHV
 from random import shuffle
 
 
@@ -60,15 +61,15 @@ for i in range(5):
     conversion_times.append(ct)
 
     t0 = monotonic()
-    cs, os, us = score_undirected_nbs(G, lambda n: (n_ for n_ in G.nodes if n != n_ and not hvs[n_].unrelated(hvs[n], 6.5)))
+    cs, os, us = score_undirected_nbs(G, lambda n: (n_ for n_ in G.nodes if n != n_ and not hvs[n_].unrelated(hvs[n], 5)))
     st = monotonic() - t0
     print("scoring time:", st)
     scoring_times.append(st)
     mcs = fmean(cs)
-    print("stats:", mcs, pstdev(cs))
+    print("stats:", mcs, "+-", pstdev(cs))
     mos = fmean(os)
     mus = fmean(us)
-    print("scores:", mos, mus)
+    print("overshoot:", mos, "undershoot", mus)
     avg_overshoot.append(mos/mcs)
     avg_undershoot.append(mus/mcs)
 

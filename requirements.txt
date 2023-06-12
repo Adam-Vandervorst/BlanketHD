@@ -1,3 +1,4 @@
-bhv==0.4.3
+rdflib[benchmarks]
+bhv
 matplotlib~=3.7.1
 networkx

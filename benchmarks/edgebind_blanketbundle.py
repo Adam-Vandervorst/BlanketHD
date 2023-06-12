@@ -5,8 +5,8 @@ from multiprocessing import Pool
 
 
 import networkx as nx
-from bhv.np import NumPyPacked64BHV as BHV
-# from bhv.np import NumPyBoolBHV as BHV
+# from bhv.np import NumPyPacked64BHV as BHV
+from bhv.native import NativePackedBHV as BHV
 
 
 #  nbsf has type nx.Node -> [nx.Node]
