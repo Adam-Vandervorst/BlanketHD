@@ -1,4 +1,5 @@
 from bhv.np import NumPyPacked64BHV as BHV
+from bhv.lookup import StoreList
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -33,11 +34,5 @@ G = nx.karate_club_graph()
 
 hvs, Ghv = convert(G)
 
-
-def nbs(n):
-    hv = hvs[n]
-    nbs = Ghv ^ hv
-    return [n_ for n_ in G.nodes if not hvs[n_].unrelated(nbs)]
-
-
-score_nbs(G, nbs)
+store = StoreList(hvs)
+score_nbs(G, lambda n: store.related(hvs[n] ^ Ghv))

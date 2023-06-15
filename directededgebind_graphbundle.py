@@ -1,3 +1,4 @@
+from bhv.lookup import StoreList
 from bhv.np import NumPyPacked64BHV as BHV
 
 import networkx as nx
@@ -18,13 +19,9 @@ def convert(g: nx.DiGraph, initial=None):
 
 G = nx.erdos_renyi_graph(50, 0.05, directed=True)
 
+P = 3
 hvs, Ghv = convert(G)
 
 
-def nbs(n):
-    hv = hvs[n]
-    nbs = (Ghv ^ hv).permute(-1)
-    return [n_ for n_ in G.nodes if not hvs[n_].unrelated(nbs, 3)]
-
-
-score_nbs(G, nbs)
+store = StoreList(hvs)
+score_nbs(G, lambda n: store.related((Ghv ^ hvs[n]).permute(-1), P))

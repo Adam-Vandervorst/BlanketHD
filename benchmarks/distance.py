@@ -2,6 +2,7 @@ from time import monotonic
 from statistics import fmean, pstdev
 
 import networkx as nx
+from bhv.lookup import StoreList
 # from bhv.np import NumPyPacked64BHV as BHV
 from bhv.native import NativePackedBHV as BHV
 from random import shuffle
@@ -24,7 +25,7 @@ def score_undirected_nbs(g: nx.Graph, nbsf):
     return counts, overs, unders
 
 
-def convert(g: nx.Graph, p=0.05, k=100, s_power=6):
+def convert(g: nx.Graph, k=100, s_power=6):
     hvs = {n: BHV.rand() for n in g.nodes}
     edges = list(g.edges)
 
@@ -33,14 +34,14 @@ def convert(g: nx.Graph, p=0.05, k=100, s_power=6):
             hvx = hvs[x]
             hvy = hvs[y]
 
-            if hvx.bit_error_rate(hvy) > .5 - p:
-                c = hvx.select_rand(hvy)
+            c = hvx.select_rand(hvy)
 
-                hvx_ = c.select_rand2(hvx, s_power)
-                hvy_ = c.select_rand2(hvy, s_power)
+            hvx_ = c.select_rand2(hvx, s_power)
+            hvy_ = c.select_rand2(hvy, s_power)
 
-                hvs[x] = hvx_
-                hvs[y] = hvy_
+            hvs[x] = hvx_
+            hvs[y] = hvy_
+
         shuffle(edges)
     return hvs
 
@@ -53,15 +54,16 @@ avg_undershoot = []
 for i in range(5):
     print("repetition", i)
     G = nx.erdos_renyi_graph(1000, 0.03)
-    P = 0.05
     t0 = monotonic()
-    hvs = convert(G, p=P)
+    hvs = convert(G, k=100)
     ct = monotonic() - t0
     print("conversion time:", ct)
     conversion_times.append(ct)
 
+    store = StoreList(hvs)
+
     t0 = monotonic()
-    cs, os, us = score_undirected_nbs(G, lambda n: (n_ for n_ in G.nodes if n != n_ and not hvs[n_].unrelated(hvs[n], 5)))
+    cs, os, us = score_undirected_nbs(G, lambda n: store.related(hvs[n], threshold=4.2))
     st = monotonic() - t0
     print("scoring time:", st)
     scoring_times.append(st)
@@ -81,13 +83,19 @@ print("undershoot loss:", fmean(avg_undershoot), "+-", pstdev(avg_undershoot))
 
 
 """
-Adam Workstation
+Adam Workstation  (OUTDATED)
 conversion time: 64.92264482758473 +- 1.3443107052971761
 scoring time: 4.556829810584896 +- 0.05932598371485799
 overshoot loss: 0.17745430970212372 +- 0.04014832701293576
 undershoot loss: 0.360622835307186 +- 0.026702056348248782
 
-AWS c6i.large
+Adam Laptop
+conversion time: 15.978824611399613 +- 0.0712963626382589
+scoring time: 0.8618214570000419 +- 0.0051379973708396065
+overshoot loss: 0.43790523390560976 +- 0.022149696414124755
+undershoot loss: 0.23963386756434352 +- 0.010714618122068262
+
+AWS c6i.large  (OUTDATED)
 conversion time: 57.702627090600004 +- 0.5105765311043634
 scoring time: 8.311138239999991 +- 0.06991942551272408
 overshoot loss: 0.16692675233013826 +- 0.03326871875573161

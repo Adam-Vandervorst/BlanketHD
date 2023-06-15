@@ -1,3 +1,4 @@
+from bhv.lookup import StoreList
 from bhv.np import NumPyPacked64BHV as BHV
 
 import networkx as nx
@@ -27,8 +28,8 @@ def convert(g: nx.Graph, initial=None, p=0.05, k=100, s_power=6):
 
 
 G = nx.karate_club_graph()
-P = 0.05
-hvs = convert(G, p=P)
+P = 4
+hvs = convert(G, p=BHV.std_to_frac(P))
 
-
-score_nbs(G, lambda n: [n_ for n_ in G.nodes if n != n_ and hvs[n_].bit_error_rate(hvs[n]) < .5 - P])
+store = StoreList(hvs)
+score_nbs(G, lambda n: store.related(hvs[n], threshold=4), include_diag=True)

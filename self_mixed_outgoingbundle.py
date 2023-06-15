@@ -3,6 +3,7 @@ from random import random
 import networkx as nx
 import matplotlib.pyplot as plt
 from bhv.np import NumPyPacked64BHV as BHV
+from bhv.lookup import StoreList
 
 from shared import score_nbs
 
@@ -19,4 +20,5 @@ G = nx.erdos_renyi_graph(50, 0.05, directed=True)
 
 hvs = convert(G)
 
-score_nbs(G, lambda n: (n_ for n_ in G.nodes if n != n_ and not hvs[n].unrelated(hvs[n_], 8)))
+store = StoreList(hvs)
+score_nbs(G, lambda n: store.related(hvs[n], threshold=8), include_diag=True)

@@ -19,13 +19,17 @@ def compare_adjs(adj, sim, labels):
     plt.show()
 
 
-def calc_nbs(g, nbsf):
+def calc_nbs(g, nbsf, include_diag=False):
     counts = []
     overs = []
     unders = []
 
     for n in g.nodes:
         truth = set(g.neighbors(n))
+
+        if include_diag is not None:
+            if include_diag: truth.add(n)
+            elif n in truth: truth.remove(n)
 
         predicted = set(nbsf(n))
 
@@ -39,7 +43,7 @@ def calc_nbs(g, nbsf):
     return counts, overs, unders
 
 
-def score_nbs(g, nbsf):
-    cs, os, us = calc_nbs(g, nbsf)
+def score_nbs(g, nbsf, include_diag=False):
+    cs, os, us = calc_nbs(g, nbsf, include_diag=include_diag)
     print("mean edges", fmean(cs), "std edges", pstdev(cs))
     print("mean edge overshoot", fmean(os), "mean edge undershoot", fmean(us))
