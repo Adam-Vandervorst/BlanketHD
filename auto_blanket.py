@@ -1,8 +1,8 @@
-from bhv.np import NumPyPacked64BHV as BHV
-# from bhv.native import NativePackedBHV as BHV
+# from bhv.np import NumPyPacked64BHV as BHV
+from bhv.native import NativePackedBHV as BHV
 
-from random import shuffle
-from statistics import fmean, pstdev
+from random import shuffle, sample, random
+from statistics import fmean, pstdev, geometric_mean
 from math import ceil
 
 
@@ -12,11 +12,10 @@ def ber_maj(ber: float) -> int:
 
 
 class BlanketPolicy:
-    def __init__(self, recovery: float, margin: float):
-        self.recovery = recovery
-        self.margin = margin
+    def expected_overlap(self, n: int) -> float:
+        raise NotImplementedError()
 
-    def nblankets(self, nhvs: int) -> int:
+    def nblankets(self, n: int) -> int:
         raise NotImplementedError()
 
     def blankets(self, hvs: list[BHV]) -> list[BHV]:
@@ -27,6 +26,13 @@ class BlanketPolicy:
 
 
 class NonOverlapping(BlanketPolicy):
+    def __init__(self, recovery: float, margin: float):
+        self.recovery = recovery
+        self.margin = margin
+
+    def expected_overlap(self, n: int) -> float:
+        return 1
+
     def nblankets(self, n: int) -> int:
         return ceil(n / ber_maj(BHV.std_to_frac(self.recovery + self.margin)))
 
@@ -41,8 +47,11 @@ class NonOverlapping(BlanketPolicy):
 
 class PerfectOverlap(BlanketPolicy):
     def __init__(self, recovery: float, redundancy: int = 2):
-        super().__init__(recovery, 0)
+        self.recovery = recovery
         self.redundancy = redundancy
+
+    def expected_overlap(self, n: int) -> float:
+        return self.redundancy
 
     def nbase(self, n: int) -> int:
         return NonOverlapping(self.recovery, 0).nblankets(n)
@@ -69,10 +78,13 @@ class PerfectOverlap(BlanketPolicy):
 
 class NonOverlappingBindRedundant(BlanketPolicy):
     def __init__(self, recovery: float, redundancy: int = 2, permutation=1):
-        super().__init__(recovery, 0)
+        self.recovery = recovery
         self.redundancy = redundancy
         self.permutation = permutation
         self.bases = BHV.nrand(redundancy)
+
+    def expected_overlap(self, n: int) -> float:
+        return self.redundancy
 
     def nbase(self, n: int) -> int:
         return NonOverlapping(self.recovery, 0).nblankets(n)
@@ -95,11 +107,31 @@ class NonOverlappingBindRedundant(BlanketPolicy):
         return BHV.frac_to_std(min(bers), invert=True) >= 3
 
 
+class Chaotic(BlanketPolicy):
+    def __init__(self, sizes: list[float]):
+        self.sizes = sizes
+
+    def expected_overlap(self, n: int) -> float:
+        return sum(s*n for s in self.sizes)/n
+
+    def nblankets(self, n: int) -> int:
+        return len(self.sizes)
+
+    def blankets(self, hvs: list[BHV]) -> list[BHV]:
+        n = len(hvs)
+        return [BHV.majority(sample(hvs, k=int(size*n))) for size in self.sizes]
+
+    def accept(self, bs: list[BHV], target: BHV) -> bool:
+        return BHV.frac_to_std(min([b.bit_error_rate(target) for s, b in zip(self.sizes, bs)]), invert=True) >= 3
+
+
 N = 1000
-if True:
+
+initialize = "composite"
+if initialize == "orthogonal":
     hvs = BHV.nrand(N)
     nhvs = BHV.nrand(N)
-else:
+elif initialize == "path":
     s = BHV.rand()
 
     hvs = []
@@ -113,10 +145,18 @@ else:
         nhvs.append(s)
         s = s.flip_pow(2)
     shuffle(nhvs)
+elif initialize == "composite":
+    d = 4
+    dd = d*d
+    pool = BHV.nrand(N//d)
 
-# policy = NonOverlapping(recovery=5, margin=2)
-policy = NonOverlappingBindRedundant(recovery=5, redundancy=2)
+    hvs = [BHV.representative(sample(pool, k=N//d)) for i in range(N)]
+    nhvs = [BHV.representative(sample(pool, k=N//d)) for i in range(N)]
+
+policy = NonOverlapping(recovery=5, margin=2)
+# policy = NonOverlappingBindRedundant(recovery=5, redundancy=2)
 # policy = PerfectOverlap(recovery=3.5, redundancy=2)
+# policy = Chaotic([.9 for _ in range(50)])
 
 
 bs = policy.blankets(hvs)
