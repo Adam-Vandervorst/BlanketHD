@@ -25,6 +25,8 @@ class BlanketPolicy:
         raise NotImplementedError()
 
 
+# ------------------ ------------------ ------------------ ------------------ ----| bundle blanket
+# ................................................................................| input vector
 class NonOverlapping(BlanketPolicy):
     def __init__(self, recovery: float, margin: float):
         self.recovery = recovery
@@ -45,6 +47,9 @@ class NonOverlapping(BlanketPolicy):
         return BHV.frac_to_std(min(b.bit_error_rate(target) for b in bs), invert=True) >= self.recovery
 
 
+# -------- ------------------ ------------------ ------------------ --------------| bundle blanket layer 1
+# ------------------ ------------------ ------------------ ------------------ ----| bundle blanket layer 1
+# ................................................................................| input vector
 class PerfectOverlap(BlanketPolicy):
     def __init__(self, recovery: float, redundancy: int = 2):
         self.recovery = recovery
@@ -76,6 +81,12 @@ class PerfectOverlap(BlanketPolicy):
         return BHV.frac_to_std(min(fmean(bers[i:i + self.redundancy]) for i in range(len(bers))), invert=True) >= self.recovery
 
 
+# ------------------ ------------------ ------------------ ------------------ ----|  blanket to corresponding basis 1
+# ................................................................................|  input bound with basis vector 1
+# ------------------ ------------------ ------------------ ------------------ ----|  blanket to corresponding basis 2
+# ................................................................................|  input bound with basis vector 2
+# ------------------ ------------------ ------------------ ------------------ ----|  blanket to corresponding basis 3
+# ................................................................................|  input bound with basis vector 3
 class NonOverlappingBindRedundant(BlanketPolicy):
     def __init__(self, recovery: float, redundancy: int = 2, permutation=1):
         self.recovery = recovery
@@ -107,6 +118,11 @@ class NonOverlappingBindRedundant(BlanketPolicy):
         return BHV.frac_to_std(min(bers), invert=True) >= 3
 
 
+# =----------                         -----                             ------   -| bundle blankets
+#         ---------------------- ----                                             |   ||
+#    --                -----------------         -----   ---------------------    |   ||
+# ----------------   ------------       ---------------------------------- -------|   ||
+# ................................................................................| input vector
 class Chaotic(BlanketPolicy):
     def __init__(self, sizes: list[float]):
         self.sizes = sizes
@@ -127,7 +143,7 @@ class Chaotic(BlanketPolicy):
 
 N = 1000
 
-initialize = "composite"
+initialize = "orthogonal"
 if initialize == "orthogonal":
     hvs = BHV.nrand(N)
     nhvs = BHV.nrand(N)
@@ -153,9 +169,9 @@ elif initialize == "composite":
     hvs = [BHV.representative(sample(pool, k=N//d)) for i in range(N)]
     nhvs = [BHV.representative(sample(pool, k=N//d)) for i in range(N)]
 
-policy = NonOverlapping(recovery=5, margin=2)
-# policy = NonOverlappingBindRedundant(recovery=5, redundancy=2)
-# policy = PerfectOverlap(recovery=3.5, redundancy=2)
+# policy = NonOverlapping(recovery=5, margin=2)
+policy = NonOverlappingBindRedundant(recovery=5, redundancy=3)
+# policy = PerfectOverlap(recovery=5, redundancy=2)
 # policy = Chaotic([.9 for _ in range(50)])
 
 

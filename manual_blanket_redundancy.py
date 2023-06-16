@@ -66,27 +66,3 @@ for nbs in range(1, 10):
 
     print(fmean([(BHV.frac_to_std(min(b.bit_error_rate(hv) for b in bs), invert=True) >= 4) == (i < N)
                  for i, hv in enumerate(hvs + nhvs)]))
-
-"""
-red 2
-
-positive examples
- furthest from noise: 9.468601741826106
- average: 6.4571113005567895
- closest to noise: 4.342077578223638
-negative examples
- furthest from noise: 3.2040776022515445
- average: 1.2653233907595052
- closest to noise: -0.8507378461150665
-
-no overlap
- 
-positive examples
- furthest from noise: 12.285980323116263
- average: 9.154116000893396
- closest to noise: 5.457980467283662
-negative examples
- furthest from noise: 3.95537855726225
- average: 1.750995264000096
- closest to noise: 0.3977475644174291
-"""
