@@ -1,5 +1,5 @@
-# from bhv.np import NumPyPacked64BHV as BHV
-from bhv.native import NativePackedBHV as BHV
+from bhv.np import NumPyPacked64BHV as BHV
+# from bhv.native import NativePackedBHV as BHV
 
 from random import shuffle
 from statistics import fmean, pstdev
@@ -9,6 +9,7 @@ from math import ceil
 maj_ber_index = [BHV.maj_ber(i) for i in range(1, 2_000)]
 def ber_maj(ber: float) -> int:
     return next(i for i, v in enumerate(maj_ber_index) if v <= ber)
+
 
 class BlanketPolicy:
     def __init__(self, recovery: float, margin: float):
@@ -23,6 +24,7 @@ class BlanketPolicy:
 
     def accept(self, bs: list[BHV], target: BHV) -> bool:
         raise NotImplementedError()
+
 
 class NonOverlapping(BlanketPolicy):
     def nblankets(self, n: int) -> int:
@@ -65,8 +67,36 @@ class PerfectOverlap(BlanketPolicy):
         return BHV.frac_to_std(min(fmean(bers[i:i + self.redundancy]) for i in range(len(bers))), invert=True) >= self.recovery
 
 
+class NonOverlappingBindRedundant(BlanketPolicy):
+    def __init__(self, recovery: float, redundancy: int = 2, permutation=1):
+        super().__init__(recovery, 0)
+        self.redundancy = redundancy
+        self.permutation = permutation
+        self.bases = BHV.nrand(redundancy)
+
+    def nbase(self, n: int) -> int:
+        return NonOverlapping(self.recovery, 0).nblankets(n)
+
+    def nblankets(self, n: int) -> int:
+        return self.redundancy*self.nbase(n)
+
+    def blankets(self, hvs: list[BHV]) -> list[BHV]:
+        n = len(hvs)
+        chunksize = ceil(n / self.nbase(n))
+        bs = []
+        for i in range(0, N, chunksize):
+            for base in self.bases:
+                bs.append(BHV.majority([base ^ hv for hv in hvs[i:i + chunksize]]))
+        return bs
+
+    def accept(self, bs: list[BHV], target: BHV) -> bool:
+        ts = [target ^ base for base in self.bases]
+        bers = [fmean([bs[i*self.redundancy + j].bit_error_rate(t) for j, t in enumerate(ts)]) for i in range(len(bs)//self.redundancy)]
+        return BHV.frac_to_std(min(bers), invert=True) >= 3
+
+
 N = 1000
-if False:
+if True:
     hvs = BHV.nrand(N)
     nhvs = BHV.nrand(N)
 else:
@@ -84,8 +114,9 @@ else:
         s = s.flip_pow(2)
     shuffle(nhvs)
 
-policy = NonOverlapping(recovery=3, margin=2)
-# policy = PerfectOverlap(recovery=2, redundancy=2)
+# policy = NonOverlapping(recovery=5, margin=2)
+policy = NonOverlappingBindRedundant(recovery=5, redundancy=2)
+# policy = PerfectOverlap(recovery=3.5, redundancy=2)
 
 
 bs = policy.blankets(hvs)
