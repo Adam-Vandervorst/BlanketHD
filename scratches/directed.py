@@ -1,9 +1,9 @@
 from bhv.np import NumPyBoolBHV as BHV
 
-#     ^    F L
-# c < c3    γ
-#   L v
-# c1  c2
+#      ^    F L
+#  c < c3    γ
+#    L v
+#  c1  c2
 
 
 u1, u2 = BHV.nrand(2)

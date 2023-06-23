@@ -24,9 +24,11 @@ class BlanketPolicy:
     def accept(self, bs: list[BHV], target: BHV) -> bool:
         raise NotImplementedError()
 
-
-# ------------------ ------------------ ------------------ ------------------ ----| bundle blanket
-# ................................................................................| input vector
+# each . is a hypervector
+# a (majority) bundle containing hypervectors looks like a _____ covering .'s
+# <--- capacity --->
+# ________________ ________________ ________________ ________________ ____________| bundle blanket
+# ................................................................................| input hypervectors
 class NonOverlapping(BlanketPolicy):
     def __init__(self, recovery: float, margin: float):
         self.recovery = recovery
@@ -47,9 +49,9 @@ class NonOverlapping(BlanketPolicy):
         return BHV.frac_to_std(min(b.bit_error_rate(target) for b in bs), invert=True) >= self.recovery
 
 
-# -------- ------------------ ------------------ ------------------ --------------| bundle blanket layer 1
-# ------------------ ------------------ ------------------ ------------------ ----| bundle blanket layer 1
-# ................................................................................| input vector
+# ________ __________________ __________________ __________________ ______________| bundle blanket layer 1
+# __________________ __________________ __________________ __________________ ____| bundle blanket layer 1
+# ............x...................................................................| input hypervectors
 class PerfectOverlap(BlanketPolicy):
     def __init__(self, recovery: float, redundancy: int = 2):
         self.recovery = recovery
@@ -81,11 +83,11 @@ class PerfectOverlap(BlanketPolicy):
         return BHV.frac_to_std(min(fmean(bers[i:i + self.redundancy]) for i in range(len(bers))), invert=True) >= self.recovery
 
 
-# ------------------ ------------------ ------------------ ------------------ ----|  blanket to corresponding basis 1
+# __________________ __________________ __________________ __________________ ____|  blanket to corresponding basis 1
 # ................................................................................|  input bound with basis vector 1
-# ------------------ ------------------ ------------------ ------------------ ----|  blanket to corresponding basis 2
+# __________________ __________________ __________________ __________________ ____|  blanket to corresponding basis 2
 # ................................................................................|  input bound with basis vector 2
-# ------------------ ------------------ ------------------ ------------------ ----|  blanket to corresponding basis 3
+# __________________ __________________ __________________ __________________ ____|  blanket to corresponding basis 3
 # ................................................................................|  input bound with basis vector 3
 class NonOverlappingBindRedundant(BlanketPolicy):
     def __init__(self, recovery: float, redundancy: int = 2, permutation=1):
@@ -118,10 +120,10 @@ class NonOverlappingBindRedundant(BlanketPolicy):
         return BHV.frac_to_std(min(bers), invert=True) >= 3
 
 
-# =----------                         -----                             ------   -| bundle blankets
-#         ---------------------- ----                                             |   ||
-#    --                -----------------         -----   ---------------------    |   ||
-# ----------------   ------------       ---------------------------------- -------|   ||
+# =__________                         _____                             ______   _| bundle blankets
+#         ______________________ ____                                             |   ||
+#    __                _________________        ______   _____________________    |   ||
+# ________________   ____________       __________________________________ _______|   ||
 # ................................................................................| input vector
 class Chaotic(BlanketPolicy):
     def __init__(self, sizes: list[float]):

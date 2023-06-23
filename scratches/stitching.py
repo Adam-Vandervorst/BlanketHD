@@ -1,9 +1,9 @@
 from bhv.np import NumPyBoolBHV as BHV
 import matplotlib.pyplot as plt
 
-# a - b   α - β
-# | / |
-# c - d
+#  a - b   α - β
+#  | / |
+#  c - d
 adj = [
 #    a  b  c  d  α  β
     [0, 1, 1, 0, 0, 0],  # a

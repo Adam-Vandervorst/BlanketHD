@@ -1,9 +1,9 @@
 from bhv.np import NumPyBoolBHV as BHV
 
 
-#   R  S
-#   |/
-# A----B
+#    R  S
+#    |/
+#  A----B
 
 A, B, R, S = BHV.nrand(4)
 pow = 1

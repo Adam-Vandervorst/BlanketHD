@@ -2,11 +2,11 @@ from bhv.np import NumPyBoolBHV as BHV
 from shared import compare_adjs
 
 
-# a - b   α - β
-# |        \ /
-# c- c3     γ
-# |\
-# c1 c2
+#  a - b   α - β
+#  |        \ /
+#  c- c3     γ
+#  |\
+#  c1 c2
 adj = [
     [0, 1, 1, 0, 0, 0, 0, 0, 0],  # a
     [1, 0, 0, 0, 0, 0, 0, 0, 0],  # b
