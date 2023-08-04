@@ -12,6 +12,7 @@
 | hyperedge multibind bundle             | v        | ?          | x           | v           |
 | hyperedge bundle bundle                | v        | ?          | x           | v           |
 | hyperedge permute bind                 | v        | ?          | x           | v           |
+| trie                                   | v        | ?          | x           | v           |
 
 ## Implementations
 
@@ -81,3 +82,7 @@ handle: `bind(bundle(srcs), bundle(dsts))`
 [file](hyperedge_permute_bind.py)
 
 handle: `bind(src_i.permute(i))`
+
+[file](trie.py)
+
+handle: `bind(src_0, maj(bind(src_1, maj(...).permute(1))).permute(0))`
