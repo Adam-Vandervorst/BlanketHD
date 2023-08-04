@@ -11,6 +11,7 @@
 | NTE                                    | v        | ?          | v           | v           |
 | hyperedge multibind bundle             | v        | ?          | x           | v           |
 | hyperedge bundle bundle                | v        | ?          | x           | v           |
+| hyperedge permute bind                 | v        | ?          | x           | v           |
 
 ## Implementations
 
@@ -73,3 +74,10 @@ handle: `bind(multibind(srcs), bundle(dsts))`
 [file](hyperedge_bundle_bundle.py)
 
 handle: `bind(bundle(srcs), bundle(dsts))`
+
+
+### Ordered Hypergraphs
+
+[file](hyperedge_permute_bind.py)
+
+handle: `bind(src_i.permute(i))`
