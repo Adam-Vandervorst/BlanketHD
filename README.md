@@ -9,6 +9,8 @@
 | iterative directed distance refinement | v        | x          | x           | x           |
 | setdrel(src, tgt, C)                   | v        | x          | x           | x           |
 | NTE                                    | v        | ?          | v           | v           |
+| hyperedge multibind bundle             | v        | ?          | x           | v           |
+| hyperedge bundle bundle                | v        | ?          | x           | v           |
 
 ## Implementations
 
@@ -61,3 +63,13 @@ handle: `randsel(s, bundle(bind(p, o)))`
 [file](triplebind_propertybundle.py)
 
 handle: `p, bundle(bind(Ps, Qo))`
+
+### Directed Hypergraphs
+
+[file](hyperedge_multibind_bundle.py)
+
+handle: `bind(multibind(srcs), bundle(dsts))`
+
+[file](hyperedge_bundle_bundle.py)
+
+handle: `bind(bundle(srcs), bundle(dsts))`

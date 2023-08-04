@@ -2,7 +2,8 @@ from bhv.lookup import StoreList
 from bhv.native import NativePackedBHV as BHV
 
 
-# https://link.springer.com/article/10.1007/s00454-012-9469-6 page 258
+# https://link.springer.com/article/10.1007/s00454-012-9469-6
+# page 258
 nodes = [1, 2, 3, 4, 5, 6]
 hyperedges = [
     ([1], [2]),
@@ -22,7 +23,7 @@ def convert(ns, hs, initial=None):
         for x in xs:
             xb = xb ^ hvs[x]
         # xb = BHV.majority(hvs[x] for x in xs)
-        yb = BHV.majority(hvs[y] for y in ys)
+        yb = BHV.majority([hvs[y] for y in ys])
         binds.append(xb ^ yb.permute(1))
     return hvs, BHV.majority(binds)
 
