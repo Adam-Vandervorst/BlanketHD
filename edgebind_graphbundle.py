@@ -23,8 +23,8 @@ def convert(g: nx.Graph, initial=None):
     #  nbs(x)
     #  x ^ Ghv
     #  x ^ {x ^ y, x ^ z, y ^ q}
-    #  {x ^ x ^ y, x ^ x ^ z, y ^ q}
-    #  {y, z, y ^ q}
+    #  {x ^ x ^ y, x ^ x ^ z, x ^ y ^ q}
+    #  {y, z, x ^ y ^ q}
     #  {y, z}
 
     return hvs, BHV.majority(binds)
