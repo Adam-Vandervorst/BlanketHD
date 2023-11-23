@@ -40,7 +40,7 @@ c3 = c.flip_frac(p)
 
 ns = [a, b, c, c1, c2, c3, α, β, γ]
 
-sim = [[0 if x == y else x.std_apart(y, invert=True) for x in ns] for y in ns]
+sim = [[0 if x is y else -x.std_apart(y, relative=True) for x in ns] for y in ns]
 
 print(a.bit_error_rate(b),
       # root2.bit_error_rate(α),

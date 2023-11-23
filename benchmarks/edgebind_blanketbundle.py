@@ -65,7 +65,7 @@ for i in range(5):
         hv = hvs[n]
         nbs_options = [blanket ^ hv for blanket in blankets]
         return [n_ for n_ in G.nodes if
-                sum(not hvs[n_].unrelated(nbs_option, 3) for nbs_option in nbs_options) >= RED]
+                sum(hvs[n_].related(nbs_option, 3) for nbs_option in nbs_options) >= RED]
 
 
     t0 = monotonic()
@@ -89,45 +89,16 @@ print("undershoot loss:", fmean(avg_undershoot), "+-", pstdev(avg_undershoot))
 
 
 """
-OUTDATED (was bhv version 0.3.0)
+Adam Workstation
+conversion time: 0.2788123039994389 +- 0.042903326702766705
+scoring time: 1.1538768206024543 +- 0.011007476261102168
+overshoot loss: 0.492798784924418 +- 0.03098208082093101
+undershoot loss: 0.5600437279433577 +- 0.009693142355089087
 
-Adam Workstation 8 cores
+Azure HBv4
+conversion time: 0.32892023340000376 +- 0.013533457504777626
+scoring time: 0.35380649539984005 +- 0.012133735484164201
+overshoot loss: 0.48203651044844414 +- 0.014193690606825547
+undershoot loss: 0.563029737032123 +- 0.005069288395927521
 
-1000 nodes
-1 "blanket" (NOTE this is doing a very large bundle, use NumPyBoolBHV)
-conversion time: 0.41756714361254127 +- 0.0639423438148542
-scoring time: 18.3407090557972 +- 0.3667289361444694
-overshoot loss: 1.4830413311629933 +- 0.01862748160240708
-undershoot loss: 0.9156151054085824 +- 0.0008664566438166838
-
-10 disjoint blankets
-conversion time: 5.286508035403676 +- 0.009888001521766079
-scoring time: 0.7203056167811155 +- 0.028054543306225213
-overshoot loss: 0.8763651593649275 +- 0.020374035578414305
-undershoot loss: 0.8555179588353592 +- 0.006161792551931035
-
-1000//(30//2) blankets (checking 1 in 10)
-conversion time: 2.72682489764411 +- 0.04742734934242383
-scoring time: 4.615515147196129 +- 0.17808535994692343
-overshoot loss: 0.4832444826882484 +- 0.014321876298373441
-undershoot loss: 0.5522187451599556 +- 0.012364810368286287
-
-AWS c6i.large 2 cores
-1000//(30//2) blankets (checking 1 in 10)
-conversion time: 12.228359039600026 +- 0.12517443612193752
-scoring time: 50.87219557479998 +- 0.1338535056834851
-overshoot loss: 0.4684689726364574 +- 0.015055239250897216
-undershoot loss: 0.5702441709158104 +- 0.008900834538223358
-
-AWS c6i.x16large 64 cores
-1000//(30//2) blankets (checking 1 in 10)
-conversion time: 0.9360306159999994 +- 0.012868246615325736
-scoring time: 2.0433540976000133 +- 0.015534015157973488
-overshoot loss: 0.46209885034199116 +- 0.007352991359913596
-undershoot loss: 0.5704420880132461 +- 0.00906461941805357
-
-
-AWS c6in.metal 128 cores
-1000//(30//2) blankets (checking 1 in 10)
-TODO
 """

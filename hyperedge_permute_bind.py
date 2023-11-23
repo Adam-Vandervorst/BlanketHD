@@ -1,4 +1,3 @@
-from bhv.lookup import StoreList
 from bhv.native import NativePackedBHV as BHV
 
 # https://www.wolframphysics.org/technical-introduction/basic-form-of-models/the-representation-of-rules/
@@ -25,12 +24,12 @@ def convert(ns, hs, initial=None):
 
 hvs, Ghv = convert(nodes, hyperedges)
 
-store = StoreList(hvs)
+index_to_name = lambda x: x+1
 
 starting11 = ((Ghv ^ hvs[1]) ^ hvs[1].permute(1)).permute(-2)
-starting11_results = list(store.related(starting11))
-print(starting11_results)
+starting11_results = starting11.within_std(hvs.values(), -4, True)
+print(*map(index_to_name, starting11_results))
 
 starting12 = ((Ghv ^ hvs[1]) ^ hvs[2].permute(1)).permute(-2)
-starting12_results = list(store.related(starting12))
-print(starting12_results)
+starting12_results = starting12.within_std(hvs.values(), -4, True)
+print(*map(index_to_name, starting12_results))

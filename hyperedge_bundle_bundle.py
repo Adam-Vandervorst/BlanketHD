@@ -1,6 +1,4 @@
-from bhv.lookup import StoreList
-# from bhv.native import NativePackedBHV as BHV
-from bhv.np import NumPyPacked64BHV as BHV
+from bhv.native import NativePackedBHV as BHV
 
 
 # https://www.sciencedirect.com/science/article/pii/0166218X9390045P/pdf?md5=e39c66ca8fd845fc3f2fe5cae99f4e26&pid=1-s2.0-0166218X9390045P-main.pdf
@@ -28,24 +26,24 @@ def convert(ns, hs, initial=None):
 
 hvs, Ghv = convert(nodes, hyperedges)
 
-store = StoreList(hvs)
+index_to_name = lambda x: x+1
 
 step1 = (Ghv ^ hvs[1]).permute(-1)
-step1_results = list(store.related(step1))
-print(step1_results)
+step1_results = step1.within_std(hvs.values(), -4, True)
+print(*map(index_to_name, step1_results))
 
 step2 = (Ghv ^ BHV.majority([hvs[r] for r in step1_results])).permute(-1)
-step2_results = list(store.related(step2, 4))
-print(step2_results)
+step2_results = step2.within_std(hvs.values(), -4, True)
+print(*map(index_to_name, step2_results))
 
 step3 = (Ghv ^ BHV.majority([hvs[r] for r in step2_results])).permute(-1)
-step3_results = list(store.related(step3, 4))
-print(step3_results)
+step3_results = step3.within_std(hvs.values(), -4, True)
+print(*map(index_to_name, step3_results))
 # detected three-step neighbors 6 and 8 via paths 1-5-7-6 and 1-5-7-8
 
 step1 = (Ghv ^ hvs[1]).permute(-1)
 step2 = (Ghv ^ step1).permute(-1)
 step3 = (Ghv ^ step2).permute(-1)
-step3_results = list(store.related(step3, 4))
-print(step3_results)
+step3_results = step3.within_std(hvs.values(), -4, True)
+print(*map(index_to_name, step3_results))
 # doesn't work if you don't do intermediate clean up

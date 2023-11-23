@@ -1,6 +1,6 @@
 from random import shuffle
 
-from bhv.np import NumPyBoolBHV as BHV
+from bhv.native import NativePackedBHV as BHV
 
 from hedit_utils import HDict, squash
 
@@ -31,7 +31,7 @@ print("predicting properties (s, ?, o)")
 for s, ps, o in squash(NTE.triples(), axis=1):
     print(s, o)
     print(ps)
-    print([p for p in hvs if p != s and not (hvs[s] ^ hvs[o]).unrelated(hvs[p], 3)])
+    print([p for p in hvs if p != s and (hvs[s] ^ hvs[o]).related(hvs[p], 3)])
 print()
 print("predicting neighbors (s, p, ?)")
 for s in NTE['data']:
@@ -40,4 +40,4 @@ for s in NTE['data']:
     if pos:
         print(s)
         print(*pos, sep='\t')
-        print(*[(p, [o for o in os if not (hvs[s] ^ hvs[p]).unrelated(hvs[o], 3)]) for (p, os) in pos], sep='\t')
+        print(*[(p, [o for o in hvs if (hvs[s] ^ hvs[p]).related(hvs[o], 3)]) for (p, os) in pos], sep='\t')

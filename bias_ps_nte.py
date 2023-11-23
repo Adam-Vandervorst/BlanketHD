@@ -1,4 +1,4 @@
-from bhv.np import NumPyBoolBHV as BHV
+from bhv.native import NativePackedBHV as BHV
 
 from hedit_utils import HDict, squash
 
@@ -7,18 +7,27 @@ from hedit_utils import HDict, squash
 NTE = HDict.load_from_path("graphs/InteractiveDisneyStrategy.json", "property_graph")
 
 
-def bias_ps(s, ps, o, pw=1):
+def bias_ps(s, ps, o, frac):
     mps = BHV.majority(ps)
-    s_ = mps.select(s.flip_pow_on(pw), s.flip_pow_off(pw))
-    o_ = mps.select(o.flip_pow_off(pw), o.flip_pow_on(pw))
+    s_ = mps.select(s.flip_frac_on(frac), s.flip_frac_off(frac))
+    o_ = mps.select(o.flip_frac_off(frac), o.flip_frac_on(frac))
     return s_, o_
 
 
-def convert(nte: HDict, initial=None, pw=1):
+def measure_bias(x, rel, y):
+    rx = x.overlap(rel)
+    ry = y.overlap(rel)
+    return rx/(rx + ry)
+
+
+def convert(nte: HDict, initial=None, frac=.5):
     hvs = initial or {n['id']: BHV.rand() for n in nte.find_nodes()}
 
-    for s, ps, o in squash(nte.triples(), axis=1):
-        hvs[s], hvs[o] = bias_ps(hvs[s], [hvs[p] for p in ps], hvs[o], pw)
+    for _ in range(200):
+        for s, ps, o in squash(nte.triples(), axis=1):
+            hvs[s], hvs[o] = bias_ps(hvs[s], [hvs[p] for p in ps], hvs[o], frac)
+        for n in hvs:
+            hvs[n] = hvs[n] ^ BHV.random(.005)
 
     return hvs
 
@@ -39,19 +48,19 @@ precalculated = nodes | weights
 
 hvs = convert(NTE, initial=precalculated, pw=1)
 """
-hvs = convert(NTE, pw=1)
+hvs = convert(NTE, frac=.01)
 
-print("predicting properties")
+print("predicting properties (s, ?, o)")
 for s, ps, o in squash(NTE.triples(), axis=1):
     print(s, o)
-    print(ps)
-    print([p for p in hvs if p != s and hvs[s].bias_rel(hvs[o], hvs[p]) > .55])
+    print(" ", ps)
+    print(" ", [(p, measure_bias(hvs[s], hvs[p], hvs[o])) for p in hvs if p != s and p != o and measure_bias(hvs[s], hvs[p], hvs[o]) > 0.55])
 print()
-print("predicting neighbors")
+print("predicting neighbors (s, -, ?)")
 for s in NTE['data']:
     s = s['id']
     pos = list(squash(NTE.triples(s=s), axis=1))
     if pos:
         print(s)
-        print(*pos, sep='\t')
-        print(*[(p, [o for o in os if hvs[s].bias_rel(hvs[o], hvs[p]) > .50]) for (p, os) in pos], sep='\t')
+        print(" ", *pos, sep='\t')
+        print(" ", *[(p, [o for o in hvs if measure_bias(hvs[s], hvs[p], hvs[o]) > .55]) for (p, _) in pos], sep='\t')

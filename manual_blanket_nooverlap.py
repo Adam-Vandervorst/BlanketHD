@@ -43,14 +43,14 @@ for nbs in range(1, 20):
     nmins = [min(nbers[i][bn] for bn in range(nbs)) for i in range(N)]
 
     print("positive examples")
-    print(" furthest from noise:", BHV.frac_to_std(min(mins), invert=True))
-    print(" average:", BHV.frac_to_std(fmean(mins), invert=True))
-    print(" closest to noise:", BHV.frac_to_std(max(mins), invert=True))
+    print(" furthest from noise:", BHV.frac_to_std(min(mins) - .5, relative=True))
+    print(" average:", BHV.frac_to_std(fmean(mins) - .5, relative=True))
+    print(" closest to noise:", BHV.frac_to_std(max(mins) - .5, relative=True))
 
     print("negative examples")
-    print(" furthest from noise:", BHV.frac_to_std(min(nmins), invert=True))
-    print(" average:", BHV.frac_to_std(fmean(nmins), invert=True))
-    print(" closest to noise:", BHV.frac_to_std(max(nmins), invert=True))
+    print(" furthest from noise:", BHV.frac_to_std(min(nmins) - .5, relative=True))
+    print(" average:", BHV.frac_to_std(fmean(nmins) - .5, relative=True))
+    print(" closest to noise:", BHV.frac_to_std(max(nmins) - .5, relative=True))
 
-    print(fmean([(BHV.frac_to_std(min(b.bit_error_rate(hv) for b in bs), invert=True) >= 9) == (i < N)
+    print(fmean([(BHV.frac_to_std(min(b.bit_error_rate(hv) for b in bs) - .5, relative=True) >= 9) == (i < N)
                  for i, hv in enumerate(hvs + nhvs)]))

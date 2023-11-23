@@ -1,4 +1,4 @@
-from bhv.np import NumPyPacked64BHV as BHV
+from bhv.native import NativePackedBHV as BHV
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -8,11 +8,15 @@ from shared import score_nbs
 
 
 R = BHV.rand()
-def lr(l, r): return l.bias_rel(r, R ^ l)
+def lr(l, r):
+    rel = R ^ l
+    lo = rel.overlap(l)
+    ro = rel.overlap(r)
+    return lo/(lo + ro)
 
 
 def convert(g: nx.DiGraph, initial=None, p=0.02, k=100, s_power=4):
-    hvs = initial or {n: BHV.rand() for n in g.nodes}
+    hvs = initial or BHV.nrand(len(g.nodes))
     edges = list(g.edges)
 
     for i in range(k*len(edges)):

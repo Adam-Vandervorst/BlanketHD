@@ -1,4 +1,3 @@
-# from bhv.np import NumPyPacked64BHV as BHV
 from bhv.native import NativePackedBHV as BHV
 
 from random import shuffle, sample, random
@@ -6,7 +5,7 @@ from statistics import fmean, pstdev, geometric_mean
 from math import ceil
 
 
-maj_ber_index = [BHV.maj_ber(i) for i in range(1, 2_000)]
+maj_ber_index = [BHV.maj_frac(i) for i in range(1, 2_000)]
 def ber_maj(ber: float) -> int:
     return next(i for i, v in enumerate(maj_ber_index) if v <= ber)
 
@@ -46,7 +45,7 @@ class NonOverlapping(BlanketPolicy):
         return [BHV.majority(hvs[i:i+chunksize]) for i in range(0, n, chunksize)]
 
     def accept(self, bs: list[BHV], target: BHV) -> bool:
-        return BHV.frac_to_std(min(b.bit_error_rate(target) for b in bs), invert=True) >= self.recovery
+        return BHV.frac_to_std(min(b.bit_error_rate(target) for b in bs) - .5, relative=True) >= self.recovery
 
 
 # ________ __________________ __________________ __________________ ______________| bundle blanket layer 1
@@ -80,7 +79,7 @@ class PerfectOverlap(BlanketPolicy):
     def accept(self, bs: list[BHV], target: BHV) -> bool:
         bers = [b.bit_error_rate(target) for b in bs]
         bers = bers + bers[:self.redundancy]
-        return BHV.frac_to_std(min(fmean(bers[i:i + self.redundancy]) for i in range(len(bers))), invert=True) >= self.recovery
+        return BHV.frac_to_std(min(fmean(bers[i:i + self.redundancy]) for i in range(len(bers))) - .5, relative=True) >= self.recovery
 
 
 # __________________ __________________ __________________ __________________ ____|  blanket to corresponding basis 1
@@ -117,7 +116,7 @@ class NonOverlappingBindRedundant(BlanketPolicy):
     def accept(self, bs: list[BHV], target: BHV) -> bool:
         ts = [target ^ base for base in self.bases]
         bers = [fmean([bs[i*self.redundancy + j].bit_error_rate(t) for j, t in enumerate(ts)]) for i in range(len(bs)//self.redundancy)]
-        return BHV.frac_to_std(min(bers), invert=True) >= 3
+        return BHV.frac_to_std(min(bers) - .5, relative=True) >= 3
 
 
 # =__________                         _____                             ______   _| bundle blankets
@@ -140,7 +139,7 @@ class Chaotic(BlanketPolicy):
         return [BHV.majority(sample(hvs, k=int(size*n))) for size in self.sizes]
 
     def accept(self, bs: list[BHV], target: BHV) -> bool:
-        return BHV.frac_to_std(min([b.bit_error_rate(target) for s, b in zip(self.sizes, bs)]), invert=True) >= 3
+        return BHV.frac_to_std(min([b.bit_error_rate(target) for s, b in zip(self.sizes, bs)]) - .5, relative=True) >= 3
 
 
 N = 1000

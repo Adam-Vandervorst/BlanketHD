@@ -63,4 +63,4 @@ for _, (s, p_o) in zip(range(50), s_p_o.items()):
     print()
     print(s)
     print([(p, os) for (p, os) in p_o.items()], sep='\t')
-    print([(p, [o for o in os if not (hv[s] ^ hv[p]).unrelated(hv[o], 3)]) for (p, os) in p_o.items()], sep='\t')
+    print([(p, [o for o in os if (hv[s] ^ hv[p]).related(hv[o], 3)]) for (p, os) in p_o.items()], sep='\t')

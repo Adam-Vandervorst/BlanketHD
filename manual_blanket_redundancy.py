@@ -1,4 +1,3 @@
-# from bhv.np import NumPyPacked64BHV as BHV
 from bhv.native import NativePackedBHV as BHV
 
 from statistics import fmean, pstdev, geometric_mean
@@ -55,14 +54,14 @@ for nbs in range(1, 10):
     nbers = [score(bs, hv) for hv in nhvs]
 
     print("positive examples")
-    print(" furthest from noise:", BHV.frac_to_std(min(bers), invert=True))
-    print(" average:", BHV.frac_to_std(fmean(bers), invert=True))
-    print(" closest to noise:", BHV.frac_to_std(max(bers), invert=True))
+    print(" furthest from noise:", BHV.frac_to_std(min(bers) - .5, relative=True))
+    print(" average:", BHV.frac_to_std(fmean(bers) - .5, relative=True))
+    print(" closest to noise:", BHV.frac_to_std(max(bers) - .5, relative=True))
 
     print("negative examples")
-    print(" furthest from noise:", BHV.frac_to_std(min(nbers), invert=True))
-    print(" average:", BHV.frac_to_std(fmean(nbers), invert=True))
-    print(" closest to noise:", BHV.frac_to_std(max(nbers), invert=True))
+    print(" furthest from noise:", BHV.frac_to_std(min(nbers) - .5, relative=True))
+    print(" average:", BHV.frac_to_std(fmean(nbers) - .5, relative=True))
+    print(" closest to noise:", BHV.frac_to_std(max(nbers) - .5, relative=True))
 
-    print(fmean([(BHV.frac_to_std(min(b.bit_error_rate(hv) for b in bs), invert=True) >= 4) == (i < N)
+    print(fmean([(BHV.frac_to_std(min(b.bit_error_rate(hv) for b in bs) - .5, relative=True) >= 4) == (i < N)
                  for i, hv in enumerate(hvs + nhvs)]))

@@ -1,5 +1,4 @@
-from bhv.np import NumPyPacked64BHV as BHV
-from bhv.lookup import StoreList
+from bhv.native import NativePackedBHV as BHV
 
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -8,7 +7,7 @@ from shared import score_nbs
 
 
 def convert(g: nx.Graph, initial=None):
-    hvs = initial or {n: BHV.rand() for n in g.nodes}
+    hvs = initial or BHV.nrand(len(g.nodes))
     binds = []
 
     for x, y in g.edges:
@@ -34,5 +33,4 @@ G = nx.karate_club_graph()
 
 hvs, Ghv = convert(G)
 
-store = StoreList(hvs)
-score_nbs(G, lambda n: store.related(hvs[n] ^ Ghv))
+score_nbs(G, lambda n: (hvs[n] ^ Ghv).within_std(hvs, -4, relative=True))

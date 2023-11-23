@@ -11,6 +11,16 @@ we can build this using `nbs(Chris, parent, "in") ∩ nbs(male, sex, "out")`.
 Caveat: some representations allow for fast in-neighbors while others allow only for fast out-neighbors.
 Which buildings blocks are fast should be listed and optimized for, possibly by having multiple (partially redundant) representations.
 
+- graph completion
+
+(resting box)
+(resting vase)
+(adjacent box vase)
+
+introduce surface-1290
+(on box surface-1290)
+(on vase surface-1290)
+
 - node classification
 
 Given labels on part of the nodes, classify the rest based on their connections.

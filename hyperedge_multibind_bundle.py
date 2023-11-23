@@ -1,4 +1,3 @@
-from bhv.lookup import StoreList
 from bhv.native import NativePackedBHV as BHV
 
 
@@ -30,11 +29,11 @@ def convert(ns, hs, initial=None):
 
 hvs, Ghv = convert(nodes, hyperedges)
 
-store = StoreList(hvs)
+index_to_name = lambda x: x+1
 
 nbs23 = (Ghv ^ hvs[2] ^ hvs[3]).permute(-1)
-print(list(store.related(nbs23)))
+print(*map(index_to_name, nbs23.within_std(hvs.values(), -4, True)))
 
 
 nbs23 = (Ghv ^ BHV.majority([hvs[3], hvs[2]])).permute(-1)
-print(list(store.related(nbs23, threshold=3)))
+print(*map(index_to_name, nbs23.within_std(hvs.values(), -3, True)))
