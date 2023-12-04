@@ -47,3 +47,4 @@ def score_nbs(g, nbsf, include_diag=False):
     cs, os, us = calc_nbs(g, nbsf, include_diag=include_diag)
     print("mean edges", fmean(cs), "std edges", pstdev(cs))
     print("mean edge overshoot", fmean(os), "mean edge undershoot", fmean(us))
+    return [fmean(os), fmean(us)]
